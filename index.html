@@ -2,18 +2,8 @@
 <html>
 <head>
   <meta charset="UTF-8">
-  <title>Clayton's Rule - FIFO Withdrawal</title>
-
-  <!-- 
-    AdSense Site Verification Code:
-    This does NOT display ads. It only verifies your site ownership.
-    Keep this here until AdSense confirms your site is verified.
-  -->
-  <script async
-          src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4445843424643614"
-          crossorigin="anonymous">
-  </script>
-
+  <title>Clayton's Rule Calculator - Accurate Bank Account Fraud Detection</title>
+  <meta name="description" content="Use our Clayton's Rule Calculator (also known as Clayton's Law Calculator) to quickly determine fraudulent and legitimate funds in your bank account.">
   <style>
     /* Basic modern styling */
     body {
@@ -115,6 +105,8 @@
 </head>
 <body>
   <div class="container">
+    <h1>Clayton's Rule Calculator</h1>
+    <p>Calculate fraudulent and legitimate funds in your bank account quickly and accurately.</p>
     <!-- Currency Section -->
     <fieldset>
       <legend>Currency</legend>
@@ -123,7 +115,6 @@
         <input type="text" id="currencyType" placeholder="Currency symbol or leave blank">
       </div>
     </fieldset>
-
     <!-- Starting Balance Section -->
     <fieldset>
       <legend>Starting Balance</legend>
@@ -132,7 +123,6 @@
         <button id="setBalance" class="success">Set Balance</button>
       </div>
     </fieldset>
-
     <!-- Transaction Section -->
     <fieldset>
       <legend>Transaction</legend>
@@ -155,7 +145,6 @@
         </label>
       </div>
     </fieldset>
-
     <!-- Balance Display Section -->
     <fieldset>
       <legend>Balances</legend>
@@ -167,24 +156,20 @@
         <div id="totalBalance" class="balance-display">Total Balance: 0.00</div>
       </div>
     </fieldset>
-
     <!-- Transaction History Section -->
     <fieldset>
       <legend>Transaction History</legend>
       <div class="history" id="transactionHistory"></div>
     </fieldset>
-
     <!-- Clear All Button -->
     <div class="flex-row" style="justify-content: flex-end;">
       <button id="clearAll" class="danger">Clear All</button>
     </div>
   </div>
-
   <script>
     // Initialize state
     let funds = [];  // Array to store deposits in FIFO order, each entry: {amount, type}
     let startingSet = false;
-
     // DOM Elements
     const startingBalanceInput = document.getElementById('startingBalance');
     const setBalanceButton = document.getElementById('setBalance');
@@ -198,12 +183,10 @@
     const fraudCheck = document.getElementById('fraudCheck');
     const transTypeRadios = document.getElementsByName('transType');
     const currencyInput = document.getElementById('currencyType');
-
     // Returns the currently set currency symbol.
     function getCurrency() {
       return currencyInput.value.trim() || "";
     }
-
     function updateBalances() {
       const legitBalance = funds.filter(f => f.type === 'legit').reduce((sum, f) => sum + f.amount, 0);
       const fraudBalance = funds.filter(f => f.type === 'fraud').reduce((sum, f) => sum + f.amount, 0);
@@ -213,14 +196,12 @@
       fraudBalanceDiv.textContent = `Fraudulent Balance: ${curr}${fraudBalance.toFixed(2)}`;
       totalBalanceDiv.textContent = `Total Balance: ${curr}${totalBalance.toFixed(2)}`;
     }
-
     function appendHistory(text) {
       const p = document.createElement('p');
       p.textContent = text;
       transactionHistoryDiv.appendChild(p);
       transactionHistoryDiv.scrollTop = transactionHistoryDiv.scrollHeight;
     }
-
     // Set starting balance as a legitimate deposit
     setBalanceButton.addEventListener('click', () => {
       const value = parseFloat(startingBalanceInput.value);
@@ -236,7 +217,6 @@
       setBalanceButton.disabled = true;
       currencyInput.disabled = true; // lock in currency choice
     });
-
     // Enable/disable fraud checkbox depending on transaction type
     function updateFraudCheckbox() {
       const selected = document.querySelector('input[name="transType"]:checked').value;
@@ -250,7 +230,6 @@
     transTypeRadios.forEach(radio => {
       radio.addEventListener('change', updateFraudCheckbox);
     });
-
     // Record transaction
     recordTransactionButton.addEventListener('click', () => {
       if (!startingSet) {
@@ -305,14 +284,12 @@
       updateFraudCheckbox();
       updateBalances();
     });
-
     // Clear all: Reload the page (which resets the app)
     clearAllButton.addEventListener('click', () => {
       if (confirm('Are you sure you want to clear all data and refresh the page?')) {
         window.location.reload();
       }
     });
-
     // Initialize fraud checkbox state
     updateFraudCheckbox();
   </script>
