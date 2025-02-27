@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Clayton's Rule - FIFO Withdrawal</title>
+  <style>
+    /* Basic modern styling */
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: #f8f9fa;
+      margin: 0;
+      padding: 0;
+    }
+    .container {
+      max-width: 800px;
+      margin: 20px auto;
+      padding: 15px;
+      background-color: #fff;
+      border: 1px solid #dee2e6;
+      border-radius: 5px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+    fieldset {
+      border: 1px solid #ced4da;
+      border-radius: 5px;
+      padding: 10px 15px;
+      margin-bottom: 15px;
+    }
+    legend {
+      font-weight: bold;
+      padding: 0 5px;
+    }
+    .flex-row {
+      display: flex;
+      align-items: center;
+      margin-bottom: 10px;
+    }
+    .flex-row label {
+      margin-right: 10px;
+    }
+    input[type="text"],
+    input[type="number"],
+    select {
+      padding: 5px;
+      width: 200px;
+      border: 1px solid #ced4da;
+      border-radius: 3px;
+      margin-right: 10px;
+    }
+    button {
+      padding: 5px 10px;
+      border: none;
+      border-radius: 3px;
+      cursor: pointer;
+      color: #fff;
+    }
+    button.primary {
+      background-color: #007bff;
+    }
+    button.primary:hover {
+      background-color: #0069d9;
+    }
+    button.success {
+      background-color: #28a745;
+    }
+    button.success:hover {
+      background-color: #218838;
+    }
+    button.danger {
+      background-color: #dc3545;
+    }
+    button.danger:hover {
+      background-color: #b02a37;
+    }
+    .history {
+      max-height: 200px;
+      overflow-y: auto;
+      border: 1px solid #ced4da;
+      padding: 10px;
+      font-family: monospace;
+      background-color: #e9ecef;
+    }
+    .balance-display {
+      font-size: 1.1em;
+      margin-right: 20px;
+    }
+    /* Responsive improvements */
+    @media (max-width: 600px) {
+      .flex-row {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+      input[type="text"],
+      input[type="number"],
+      select {
+        width: 100%;
+        margin-bottom: 10px;
+      }
+      button {
+        width: 100%;
+      }
+    }
+    /* Ensure the ad container doesn't collapse */
+    #adContainer {
+      min-height: 90px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <!-- Currency Section -->
+    <fieldset>
+      <legend>Currency</legend>
+      <div class="flex-row">
+        <label for="currencyType">Currency Symbol:</label>
+        <input type="text" id="currencyType" placeholder="Currency symbol or leave blank">
+      </div>
+    </fieldset>
+
+    <!-- Starting Balance Section -->
+    <fieldset>
+      <legend>Starting Balance</legend>
+      <div class="flex-row">
+        <input type="number" id="startingBalance" placeholder="Enter starting balance" step="0.01">
+        <button id="setBalance" class="success">Set Balance</button>
+      </div>
+    </fieldset>
+
+    <!-- Transaction Section -->
+    <fieldset>
+      <legend>Transaction</legend>
+      <div class="flex-row">
+        <label for="transactionAmount">Amount:</label>
+        <input type="number" id="transactionAmount" placeholder="Enter amount" step="0.01">
+        <button id="recordTransaction" class="primary">Record Transaction</button>
+      </div>
+      <div class="flex-row">
+        <label>
+          <input type="radio" name="transType" value="deposit" checked> Deposit
+        </label>
+        <label>
+          <input type="radio" name="transType" value="withdrawal"> Withdrawal
+        </label>
+      </div>
+      <div class="flex-row">
+        <label>
+          <input type="checkbox" id="fraudCheck"> Mark as Fraudulent
+        </label>
+      </div>
+    </fieldset>
+
+    <!-- Balance Display Section -->
+    <fieldset>
+      <legend>Balances</legend>
+      <div class="flex-row">
+        <div id="legitBalance" class="balance-display">Legitimate Balance: 0.00</div>
+        <div id="fraudBalance" class="balance-display">Fraudulent Balance: 0.00</div>
+      </div>
+      <div class="flex-row">
+        <div id="totalBalance" class="balance-display">Total Balance: 0.00</div>
+      </div>
+    </fieldset>
+
+    <!-- Transaction History Section -->
+    <fieldset>
+      <legend>Transaction History</legend>
+      <div class="history" id="transactionHistory"></div>
+    </fieldset>
+
+    <!-- Ads Section -->
+    <fieldset>
+      <legend>Sponsored</legend>
+      <div class="flex-row">
+        <div id="adContainer" style="width:100%; text-align:center;">
+          <!-- Ad content will load here -->
+        </div>
+      </div>
+    </fieldset>
+
+    <!-- Clear All Button -->
+    <div class="flex-row" style="justify-content: flex-end;">
+      <button id="clearAll" class="danger">Clear All</button>
+    </div>
+  </div>
+
+  <script>
+    // Initialize state
+    let funds = [];  // Array to store deposits in FIFO order, each entry: {amount, type}
+    let startingSet = false;
+
+    // DOM Elements
+    const startingBalanceInput = document.getElementById('startingBalance');
+    const setBalanceButton = document.getElementById('setBalance');
+    const transactionAmountInput = document.getElementById('transactionAmount');
+    const recordTransactionButton = document.getElementById('recordTransaction');
+    const transactionHistoryDiv = document.getElementById('transactionHistory');
+    const legitBalanceDiv = document.getElementById('legitBalance');
+    const fraudBalanceDiv = document.getElementById('fraudBalance');
+    const totalBalanceDiv = document.getElementById('totalBalance');
+    const clearAllButton = document.getElementById('clearAll');
+    const fraudCheck = document.getElementById('fraudCheck');
+    const transTypeRadios = document.getElementsByName('transType');
+    const currencyInput = document.getElementById('currencyType');
+    const adContainer = document.getElementById('adContainer');
+
+    // Returns the currently set currency symbol.
+    function getCurrency() {
+      return currencyInput.value.trim() || "";
+    }
+
+    function updateBalances() {
+      const legitBalance = funds.filter(f => f.type === 'legit').reduce((sum, f) => sum + f.amount, 0);
+      const fraudBalance = funds.filter(f => f.type === 'fraud').reduce((sum, f) => sum + f.amount, 0);
+      const totalBalance = legitBalance + fraudBalance;
+      const curr = getCurrency();
+      legitBalanceDiv.textContent = `Legitimate Balance: ${curr}${legitBalance.toFixed(2)}`;
+      fraudBalanceDiv.textContent = `Fraudulent Balance: ${curr}${fraudBalance.toFixed(2)}`;
+      totalBalanceDiv.textContent = `Total Balance: ${curr}${totalBalance.toFixed(2)}`;
+    }
+
+    function appendHistory(text) {
+      const p = document.createElement('p');
+      p.textContent = text;
+      transactionHistoryDiv.appendChild(p);
+      transactionHistoryDiv.scrollTop = transactionHistoryDiv.scrollHeight;
+    }
+
+    // Set starting balance as a legitimate deposit
+    setBalanceButton.addEventListener('click', () => {
+      const value = parseFloat(startingBalanceInput.value);
+      if (isNaN(value) || value <= 0) {
+        alert('Please enter a valid, positive starting balance.');
+        return;
+      }
+      funds.push({amount: value, type: 'legit'});
+      startingSet = true;
+      updateBalances();
+      appendHistory(`Starting Balance: ${getCurrency()}${value.toFixed(2)} (Legitimate)`);
+      startingBalanceInput.disabled = true;
+      setBalanceButton.disabled = true;
+      currencyInput.disabled = true; // lock in currency choice
+    });
+
+    // Enable/disable fraud checkbox depending on transaction type
+    function updateFraudCheckbox() {
+      const selected = document.querySelector('input[name="transType"]:checked').value;
+      if (selected === 'withdrawal') {
+        fraudCheck.checked = false;
+        fraudCheck.disabled = true;
+      } else {
+        fraudCheck.disabled = false;
+      }
+    }
+    transTypeRadios.forEach(radio => {
+      radio.addEventListener('change', updateFraudCheckbox);
+    });
+
+    // Record transaction
+    recordTransactionButton.addEventListener('click', () => {
+      if (!startingSet) {
+        alert('Please set the starting balance first.');
+        return;
+      }
+      const amount = parseFloat(transactionAmountInput.value);
+      if (isNaN(amount) || amount <= 0) {
+        alert('Please enter a valid, positive transaction amount.');
+        return;
+      }
+      const transType = document.querySelector('input[name="transType"]:checked').value;
+      const curr = getCurrency();
+      if (transType === 'deposit') {
+        const depositType = fraudCheck.checked ? 'fraud' : 'legit';
+        funds.push({amount: amount, type: depositType});
+        appendHistory(`Deposit: ${curr}${amount.toFixed(2)} (${depositType === 'fraud' ? 'Fraudulent' : 'Legitimate'})`);
+      } else {
+        // Withdrawal: process funds in FIFO order.
+        const totalAvailable = funds.reduce((sum, f) => sum + f.amount, 0);
+        if (amount > totalAvailable) {
+          alert('Not enough funds to withdraw the specified amount.');
+          return;
+        }
+        let withdrawalRemaining = amount;
+        let fraudUsed = 0.0;
+        let legitUsed = 0.0;
+        while (withdrawalRemaining > 0 && funds.length > 0) {
+          const current = funds[0];
+          if (current.amount <= withdrawalRemaining) {
+            if (current.type === 'fraud') {
+              fraudUsed += current.amount;
+            } else {
+              legitUsed += current.amount;
+            }
+            withdrawalRemaining -= current.amount;
+            funds.shift();
+          } else {
+            if (current.type === 'fraud') {
+              fraudUsed += withdrawalRemaining;
+            } else {
+              legitUsed += withdrawalRemaining;
+            }
+            current.amount -= withdrawalRemaining;
+            withdrawalRemaining = 0;
+          }
+        }
+        appendHistory(`Withdrawal: ${curr}${amount.toFixed(2)} (Legitimate used: ${curr}${legitUsed.toFixed(2)}, Fraudulent used: ${curr}${fraudUsed.toFixed(2)})`);
+      }
+      transactionAmountInput.value = '';
+      fraudCheck.checked = false;
+      updateFraudCheckbox();
+      updateBalances();
+    });
+
+    // Ads: Simulate ads by selecting a random ad banner
+    const ads = [
+      '<a href="https://example.com/ad1" target="_blank"><img src="https://via.placeholder.com/728x90?text=Ad+1" alt="Ad 1"></a>',
+      '<a href="https://example.com/ad2" target="_blank"><img src="https://via.placeholder.com/728x90?text=Ad+2" alt="Ad 2"></a>',
+      '<a href="https://example.com/ad3" target="_blank"><img src="https://via.placeholder.com/728x90?text=Ad+3" alt="Ad 3"></a>'
+    ];
+    function loadAd() {
+      const randomIndex = Math.floor(Math.random() * ads.length);
+      adContainer.innerHTML = ads[randomIndex];
+    }
+    loadAd();
+
+    // Clear all: Reload the page (which resets the app and refreshes the ad)
+    clearAllButton.addEventListener('click', () => {
+      if (confirm('Are you sure you want to clear all data and refresh the page?')) {
+        window.location.reload();
+      }
+    });
+
+    // Initialize fraud checkbox state
+    updateFraudCheckbox();
+  </script>
+</body>
+</html>
