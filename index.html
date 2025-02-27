@@ -100,10 +100,6 @@
         width: 100%;
       }
     }
-    /* Ensure the ad container doesn't collapse */
-    #adContainer {
-      min-height: 90px;
-    }
   </style>
 </head>
 <body>
@@ -167,16 +163,6 @@
       <div class="history" id="transactionHistory"></div>
     </fieldset>
 
-    <!-- Ads Section -->
-    <fieldset>
-      <legend>Sponsored</legend>
-      <div class="flex-row">
-        <div id="adContainer" style="width:100%; text-align:center;">
-          <!-- Ad content will load here -->
-        </div>
-      </div>
-    </fieldset>
-
     <!-- Clear All Button -->
     <div class="flex-row" style="justify-content: flex-end;">
       <button id="clearAll" class="danger">Clear All</button>
@@ -201,7 +187,6 @@
     const fraudCheck = document.getElementById('fraudCheck');
     const transTypeRadios = document.getElementsByName('transType');
     const currencyInput = document.getElementById('currencyType');
-    const adContainer = document.getElementById('adContainer');
 
     // Returns the currently set currency symbol.
     function getCurrency() {
@@ -310,22 +295,7 @@
       updateBalances();
     });
 
-// Ads: Insert your Google AdSense code directly into the ad container
-    adContainer.innerHTML = `
-      <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4445843424643614"
-           crossorigin="anonymous"></script>
-      <ins class="adsbygoogle"
-           style="display:block"
-           data-ad-client="ca-pub-4445843424643614"
-           data-ad-slot="YOUR_AD_SLOT_ID"
-           data-ad-format="auto"
-           data-full-width-responsive="true"></ins>
-      <script>
-           (adsbygoogle = window.adsbygoogle || []).push({});
-      </script>
-    `;
-
-    // Clear all: Reload the page (which resets the app and refreshes the ad)
+    // Clear all: Reload the page (which resets the app)
     clearAllButton.addEventListener('click', () => {
       if (confirm('Are you sure you want to clear all data and refresh the page?')) {
         window.location.reload();
