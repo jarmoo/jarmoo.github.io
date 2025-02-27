@@ -310,17 +310,20 @@
       updateBalances();
     });
 
-    // Ads: Simulate ads by selecting a random ad banner
-    const ads = [
-      '<a href="https://example.com/ad1" target="_blank"><img src="https://via.placeholder.com/728x90?text=Ad+1" alt="Ad 1"></a>',
-      '<a href="https://example.com/ad2" target="_blank"><img src="https://via.placeholder.com/728x90?text=Ad+2" alt="Ad 2"></a>',
-      '<a href="https://example.com/ad3" target="_blank"><img src="https://via.placeholder.com/728x90?text=Ad+3" alt="Ad 3"></a>'
-    ];
-    function loadAd() {
-      const randomIndex = Math.floor(Math.random() * ads.length);
-      adContainer.innerHTML = ads[randomIndex];
-    }
-    loadAd();
+// Ads: Insert your Google AdSense code directly into the ad container
+    adContainer.innerHTML = `
+      <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4445843424643614"
+           crossorigin="anonymous"></script>
+      <ins class="adsbygoogle"
+           style="display:block"
+           data-ad-client="ca-pub-4445843424643614"
+           data-ad-slot="YOUR_AD_SLOT_ID"
+           data-ad-format="auto"
+           data-full-width-responsive="true"></ins>
+      <script>
+           (adsbygoogle = window.adsbygoogle || []).push({});
+      </script>
+    `;
 
     // Clear all: Reload the page (which resets the app and refreshes the ad)
     clearAllButton.addEventListener('click', () => {
