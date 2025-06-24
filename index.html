@@ -7,15 +7,19 @@
         content="Jamie O’D’s Clayton’s Rule Calculator (Clayton’s Law Calculator) lets you separate fraudulent and legitimate funds with FIFO logic.">
   <style>
     /* === Default (Light Mode) === */
-    body.light-mode { background:#f8f9fa;color:#212529;margin:0;padding:0; }
-    body.light-mode .container{ background:#fff;border:1px solid #dee2e6;box-shadow:0 0 10px rgba(0,0,0,.1);}
-    body.light-mode input,body.light-mode select{background:#fff;color:#212529;border:1px solid #ced4da;}
+    body.light-mode {background:#f8f9fa;color:#212529;margin:0;padding:0;}
+    body.light-mode .container{background:#fff;border:1px solid #dee2e6;box-shadow:0 0 10px rgba(0,0,0,.1);}
+    body.light-mode input[type="text"],
+    body.light-mode input[type="number"],
+    body.light-mode select{background:#fff;color:#212529;border:1px solid #ced4da;}
     body.light-mode .history{background:#e9ecef;color:#212529;border:1px solid #ced4da;}
 
     /* === Dark Mode === */
-    body.dark-mode { background:#222;color:#fff;margin:0;padding:0; }
+    body.dark-mode {background:#222;color:#fff;margin:0;padding:0;}
     body.dark-mode .container{background:#2c2c2c;border:1px solid #444;box-shadow:none;}
-    body.dark-mode input,body.dark-mode select{background:#444;color:#fff;border:1px solid #aaa;}
+    body.dark-mode input[type="text"],
+    body.dark-mode input[type="number"],
+    body.dark-mode select{background:#444;color:#fff;border:1px solid #aaa;}
     body.dark-mode .history{background:#333;color:#fff;border:1px solid #555;}
 
     /* --- Common styles --- */
@@ -24,7 +28,24 @@
     legend{font-weight:bold;padding:0 5px;}
     .flex-row{display:flex;align-items:center;margin-bottom:10px;}
     .flex-row label{margin-right:10px;}
-    input,select{padding:5px;width:200px;border-radius:3px;margin-right:10px;}
+
+    /* Size only text/number inputs & selects */
+    input[type="text"],
+    input[type="number"],
+    select{
+      padding:5px;
+      width:200px;
+      border-radius:3px;
+      margin-right:10px;
+    }
+    /* Radio & checkbox: keep default size, add small gap */
+    input[type="radio"],
+    input[type="checkbox"]{
+      width:auto;
+      margin-right:5px;
+      cursor:pointer;
+    }
+
     button{padding:5px 10px;border:none;border-radius:3px;cursor:pointer;color:#fff;}
     button.primary{background:#007bff;}button.primary:hover{background:#0069d9;}
     button.success{background:#28a745;}button.success:hover{background:#218838;}
@@ -33,14 +54,14 @@
     .balance-display{font-size:1.1em;margin-right:20px;}
     @media(max-width:600px){
       .flex-row{flex-direction:column;align-items:flex-start;}
-      input,select,button{width:100%;margin-bottom:10px;}
+      input[type="text"],input[type="number"],select,button{width:100%;margin-bottom:10px;}
     }
   </style>
 </head>
 
 <body class="light-mode">
   <div class="container">
-    <!-- Dark-mode toggle -->
+    <!-- Dark/Light toggle -->
     <div style="text-align:right;margin-bottom:10px;">
       <button id="toggleTheme" class="primary">Dark Mode</button>
     </div>
@@ -101,7 +122,7 @@
       <div class="history" id="transactionHistory"></div>
     </fieldset>
 
-    <!-- Clear-all -->
+    <!-- Clear -->
     <div class="flex-row" style="justify-content:flex-end;">
       <button id="clearAll" class="danger">Clear All</button>
     </div>
@@ -131,49 +152,38 @@
     const fraudCheck=document.getElementById('fraudCheck');
     const transTypeRadios=document.getElementsByName('transType');
 
-    /* ---- Currency validation (1 char only) ---- */
+    /* ---- Currency validation ---- */
     currencyInput.addEventListener('input',()=>{
-      if(currencyInput.value.length>1){ currencyInput.value=currencyInput.value.slice(0,1);}
+      if(currencyInput.value.length>1) currencyInput.value=currencyInput.value.slice(0,1);
       currencyInput.value=currencyInput.value.replace(/\s/g,'');
     });
 
     /* ---- State ---- */
-    let funds=[];        // {amount, type:'legit'|'fraud'}
-    let startingSet=false;
+    let funds=[]; let startingSet=false;
 
-    const getCurrency=()=>currencyInput.value.trim()||'';
+    const getCur=()=>currencyInput.value.trim()||'';
     const updateBalances=()=>{
       const legit=funds.filter(f=>f.type==='legit').reduce((s,f)=>s+f.amount,0);
       const fraud=funds.filter(f=>f.type==='fraud').reduce((s,f)=>s+f.amount,0);
-      const total=legit+fraud, cur=getCurrency();
+      const cur=getCur(); const total=legit+fraud;
       legitBalanceDiv.textContent=`Legitimate Balance: ${cur}${legit.toFixed(2)}`;
       fraudBalanceDiv.textContent=`Fraudulent Balance: ${cur}${fraud.toFixed(2)}`;
       totalBalanceDiv.textContent=`Total Balance: ${cur}${total.toFixed(2)}`;
     };
-    const appendHistory=txt=>{
-      const p=document.createElement('p');p.textContent=txt;
-      transactionHistoryDiv.appendChild(p);
-      transactionHistoryDiv.scrollTop=transactionHistoryDiv.scrollHeight;
-    };
+    const addHist=t=>{const p=document.createElement('p');p.textContent=t;transactionHistoryDiv.appendChild(p);transactionHistoryDiv.scrollTop=transactionHistoryDiv.scrollHeight;};
 
     /* ---- Set starting balance ---- */
     setBalanceButton.addEventListener('click',()=>{
       const v=parseFloat(startingBalanceInput.value);
       if(isNaN(v)||v<=0){alert('Enter positive starting balance');return;}
-      funds.push({amount:v,type:'legit'});startingSet=true;
-      updateBalances();
-      appendHistory(`Starting Balance: ${getCurrency()}${v.toFixed(2)} (Legitimate)`);
+      funds.push({amount:v,type:'legit'}); startingSet=true;
+      updateBalances(); addHist(`Starting Balance: ${getCur()}${v.toFixed(2)} (Legitimate)`);
       startingBalanceInput.disabled=true; setBalanceButton.disabled=true; currencyInput.disabled=true;
     });
 
-    /* ---- Enable/disable fraud checkbox ---- */
-    const updateFraud=()=> {
-      const type=document.querySelector('input[name="transType"]:checked').value;
-      fraudCheck.disabled=(type==='withdrawal');
-      if(fraudCheck.disabled) fraudCheck.checked=false;
-    };
-    transTypeRadios.forEach(r=>r.addEventListener('change',updateFraud));
-    updateFraud();
+    /* ---- Fraud checkbox enable ---- */
+    const updFraud=()=>{const t=document.querySelector('input[name="transType"]:checked').value;fraudCheck.disabled=(t==='withdrawal');if(fraudCheck.disabled)fraudCheck.checked=false;};
+    transTypeRadios.forEach(r=>r.addEventListener('change',updFraud)); updFraud();
 
     /* ---- Record transaction ---- */
     recordTransactionButton.addEventListener('click',()=>{
@@ -181,35 +191,28 @@
       const amt=parseFloat(transactionAmountInput.value);
       if(isNaN(amt)||amt<=0){alert('Enter positive amount');return;}
       const type=document.querySelector('input[name="transType"]:checked').value;
-      const cur=getCurrency();
+      const cur=getCur();
       if(type==='deposit'){
         const depType=fraudCheck.checked?'fraud':'legit';
         funds.push({amount:amt,type:depType});
-        appendHistory(`Deposit: ${cur}${amt.toFixed(2)} (${depType==='fraud'?'Fraudulent':'Legitimate'})`);
+        addHist(`Deposit: ${cur}${amt.toFixed(2)} (${depType==='fraud'?'Fraudulent':'Legitimate'})`);
       }else{
         const available=funds.reduce((s,f)=>s+f.amount,0);
         if(amt>available){alert('Not enough funds');return;}
-        let remaining=amt,fraudUsed=0,legitUsed=0;
-        while(remaining>0&&funds.length){
+        let rem=amt,fr=0,lg=0;
+        while(rem>0&&funds.length){
           const f=funds[0];
-          if(f.amount<=remaining){
-            f.type==='fraud'?fraudUsed+=f.amount:legitUsed+=f.amount;
-            remaining-=f.amount;funds.shift();
-          }else{
-            f.type==='fraud'?fraudUsed+=remaining:legitUsed+=remaining;
-            f.amount-=remaining;remaining=0;
-          }
+          if(f.amount<=rem){f.type==='fraud'?fr+=f.amount:lg+=f.amount;
+            rem-=f.amount;funds.shift();}
+          else{f.type==='fraud'?fr+=rem:lg+=rem;f.amount-=rem;rem=0;}
         }
-        appendHistory(`Withdrawal: ${cur}${amt.toFixed(2)} (Legitimate used: ${cur}${legitUsed.toFixed(2)}, Fraudulent used: ${cur}${fraudUsed.toFixed(2)})`);
+        addHist(`Withdrawal: ${cur}${amt.toFixed(2)} (Legitimate used: ${cur}${lg.toFixed(2)}, Fraudulent used: ${cur}${fr.toFixed(2)})`);
       }
-      transactionAmountInput.value='';fraudCheck.checked=false;transTypeRadios[0].checked=true;updateFraud();
-      updateBalances();
+      transactionAmountInput.value=''; fraudCheck.checked=false; transTypeRadios[0].checked=true; updFraud(); updateBalances();
     });
 
     /* ---- Clear all ---- */
-    clearAllButton.addEventListener('click',()=>{
-      if(confirm('Clear all data and refresh?')) window.location.reload();
-    });
+    clearAllButton.addEventListener('click',()=>{if(confirm('Clear all data and refresh?')) window.location.reload();});
   </script>
 </body>
 </html>
