@@ -2,173 +2,62 @@
 <html>
 <head>
   <meta charset="UTF-8">
-  <title>Clayton's Rule Calculator - Dark/Light Mode</title>
-  <meta name="description" content="Use our Clayton's Rule Calculator (also known as Clayton's Law Calculator) to quickly determine fraudulent and legitimate funds in your bank account.">
+  <title>Jamie O’D’s Clayton’s Rule Calculator – Dark/Light Mode</title>
+  <meta name="description"
+        content="Jamie O’D’s Clayton’s Rule Calculator (Clayton’s Law Calculator) lets you separate fraudulent and legitimate funds with FIFO logic.">
   <style>
-    /* 
-      We define two "modes" using classes on the <body>:
-      - .light-mode (default)
-      - .dark-mode
-
-      We'll style each mode separately below. 
-    */
-
     /* === Default (Light Mode) === */
-    body.light-mode {
-      background-color: #f8f9fa;
-      color: #212529;
-      margin: 0;
-      padding: 0;
-    }
-    body.light-mode .container {
-      background-color: #fff;
-      border: 1px solid #dee2e6;
-      box-shadow: 0 0 10px rgba(0,0,0,0.1);
-    }
-    body.light-mode input[type="text"],
-    body.light-mode input[type="number"],
-    body.light-mode select {
-      background-color: #fff;
-      color: #212529;
-      border: 1px solid #ced4da;
-    }
-    body.light-mode .history {
-      background-color: #e9ecef;
-      color: #212529;
-      border: 1px solid #ced4da;
-    }
+    body.light-mode { background:#f8f9fa;color:#212529;margin:0;padding:0; }
+    body.light-mode .container{ background:#fff;border:1px solid #dee2e6;box-shadow:0 0 10px rgba(0,0,0,.1);}
+    body.light-mode input,body.light-mode select{background:#fff;color:#212529;border:1px solid #ced4da;}
+    body.light-mode .history{background:#e9ecef;color:#212529;border:1px solid #ced4da;}
 
     /* === Dark Mode === */
-    body.dark-mode {
-      background-color: #222222;
-      color: #ffffff;
-      margin: 0;
-      padding: 0;
-    }
-    body.dark-mode .container {
-      background-color: #2c2c2c;
-      border: 1px solid #444444;
-      box-shadow: none;
-    }
-    body.dark-mode input[type="text"],
-    body.dark-mode input[type="number"],
-    body.dark-mode select {
-      background-color: #444444;
-      color: #ffffff;
-      border: 1px solid #aaaaaa;
-    }
-    body.dark-mode .history {
-      background-color: #333333;
-      color: #ffffff;
-      border: 1px solid #555555;
-    }
+    body.dark-mode { background:#222;color:#fff;margin:0;padding:0; }
+    body.dark-mode .container{background:#2c2c2c;border:1px solid #444;box-shadow:none;}
+    body.dark-mode input,body.dark-mode select{background:#444;color:#fff;border:1px solid #aaa;}
+    body.dark-mode .history{background:#333;color:#fff;border:1px solid #555;}
 
-    /* Common styling for both modes */
-    .container {
-      max-width: 800px;
-      margin: 20px auto;
-      padding: 15px;
-      border-radius: 5px;
-    }
-    fieldset {
-      border: 1px solid #ced4da;
-      border-radius: 5px;
-      padding: 10px 15px;
-      margin-bottom: 15px;
-    }
-    legend {
-      font-weight: bold;
-      padding: 0 5px;
-    }
-    .flex-row {
-      display: flex;
-      align-items: center;
-      margin-bottom: 10px;
-    }
-    .flex-row label {
-      margin-right: 10px;
-    }
-    input[type="text"],
-    input[type="number"],
-    select {
-      padding: 5px;
-      width: 200px;
-      border-radius: 3px;
-      margin-right: 10px;
-    }
-    button {
-      padding: 5px 10px;
-      border: none;
-      border-radius: 3px;
-      cursor: pointer;
-      color: #fff;
-    }
-    button.primary {
-      background-color: #007bff;
-    }
-    button.primary:hover {
-      background-color: #0069d9;
-    }
-    button.success {
-      background-color: #28a745;
-    }
-    button.success:hover {
-      background-color: #218838;
-    }
-    button.danger {
-      background-color: #dc3545;
-    }
-    button.danger:hover {
-      background-color: #b02a37;
-    }
-    .history {
-      max-height: 200px;
-      overflow-y: auto;
-      font-family: monospace;
-      padding: 10px;
-    }
-    .balance-display {
-      font-size: 1.1em;
-      margin-right: 20px;
-    }
-    /* Responsive improvements */
-    @media (max-width: 600px) {
-      .flex-row {
-        flex-direction: column;
-        align-items: flex-start;
-      }
-      input[type="text"],
-      input[type="number"],
-      select {
-        width: 100%;
-        margin-bottom: 10px;
-      }
-      button {
-        width: 100%;
-      }
+    /* --- Common styles --- */
+    .container{max-width:800px;margin:20px auto;padding:15px;border-radius:5px;}
+    fieldset{border:1px solid #ced4da;border-radius:5px;padding:10px 15px;margin-bottom:15px;}
+    legend{font-weight:bold;padding:0 5px;}
+    .flex-row{display:flex;align-items:center;margin-bottom:10px;}
+    .flex-row label{margin-right:10px;}
+    input,select{padding:5px;width:200px;border-radius:3px;margin-right:10px;}
+    button{padding:5px 10px;border:none;border-radius:3px;cursor:pointer;color:#fff;}
+    button.primary{background:#007bff;}button.primary:hover{background:#0069d9;}
+    button.success{background:#28a745;}button.success:hover{background:#218838;}
+    button.danger{background:#dc3545;}button.danger:hover{background:#b02a37;}
+    .history{max-height:200px;overflow-y:auto;font-family:monospace;padding:10px;}
+    .balance-display{font-size:1.1em;margin-right:20px;}
+    @media(max-width:600px){
+      .flex-row{flex-direction:column;align-items:flex-start;}
+      input,select,button{width:100%;margin-bottom:10px;}
     }
   </style>
 </head>
+
 <body class="light-mode">
   <div class="container">
-    <!-- Dark Mode Toggle Button -->
-    <div style="text-align: right; margin-bottom: 10px;">
+    <!-- Dark-mode toggle -->
+    <div style="text-align:right;margin-bottom:10px;">
       <button id="toggleTheme" class="primary">Dark Mode</button>
     </div>
 
-    <h1>Clayton's Rule Calculator</h1>
+    <h1>Jamie O’D’s Clayton’s Rule Calculator</h1>
     <p>Calculate fraudulent and legitimate funds in your bank account quickly and accurately.</p>
 
-    <!-- Currency Section -->
+    <!-- Currency -->
     <fieldset>
       <legend>Currency</legend>
       <div class="flex-row">
-        <label for="currencyType">Currency Symbol:</label>
-        <input type="text" id="currencyType" placeholder="Currency symbol or leave blank">
+        <label for="currencyType">Symbol:</label>
+        <input type="text" id="currencyType" placeholder="€ £ $" maxlength="1">
       </div>
     </fieldset>
 
-    <!-- Starting Balance Section -->
+    <!-- Starting balance -->
     <fieldset>
       <legend>Starting Balance</legend>
       <div class="flex-row">
@@ -177,7 +66,7 @@
       </div>
     </fieldset>
 
-    <!-- Transaction Section -->
+    <!-- Transaction -->
     <fieldset>
       <legend>Transaction</legend>
       <div class="flex-row">
@@ -186,21 +75,15 @@
         <button id="recordTransaction" class="primary">Record Transaction</button>
       </div>
       <div class="flex-row">
-        <label>
-          <input type="radio" name="transType" value="deposit" checked> Deposit
-        </label>
-        <label>
-          <input type="radio" name="transType" value="withdrawal"> Withdrawal
-        </label>
+        <label><input type="radio" name="transType" value="deposit" checked> Deposit</label>
+        <label><input type="radio" name="transType" value="withdrawal"> Withdrawal</label>
       </div>
       <div class="flex-row">
-        <label>
-          <input type="checkbox" id="fraudCheck"> Mark as Fraudulent
-        </label>
+        <label><input type="checkbox" id="fraudCheck"> Mark as Fraudulent</label>
       </div>
     </fieldset>
 
-    <!-- Balance Display Section -->
+    <!-- Balances -->
     <fieldset>
       <legend>Balances</legend>
       <div class="flex-row">
@@ -212,174 +95,121 @@
       </div>
     </fieldset>
 
-    <!-- Transaction History Section -->
+    <!-- History -->
     <fieldset>
       <legend>Transaction History</legend>
       <div class="history" id="transactionHistory"></div>
     </fieldset>
 
-    <!-- Clear All Button -->
-    <div class="flex-row" style="justify-content: flex-end;">
+    <!-- Clear-all -->
+    <div class="flex-row" style="justify-content:flex-end;">
       <button id="clearAll" class="danger">Clear All</button>
     </div>
   </div>
 
   <script>
-    // ================================
-    // Dark Mode Toggle
-    // ================================
-    const toggleThemeButton = document.getElementById('toggleTheme');
-    toggleThemeButton.addEventListener('click', () => {
-      // If body is in light-mode, switch to dark-mode, and vice versa
-      if (document.body.classList.contains('light-mode')) {
-        document.body.classList.remove('light-mode');
-        document.body.classList.add('dark-mode');
-        toggleThemeButton.textContent = "Light Mode";
-      } else {
-        document.body.classList.remove('dark-mode');
-        document.body.classList.add('light-mode');
-        toggleThemeButton.textContent = "Dark Mode";
-      }
+    /* ---- Theme toggle ---- */
+    const toggleThemeButton=document.getElementById('toggleTheme');
+    toggleThemeButton.addEventListener('click',()=>{
+      document.body.classList.toggle('dark-mode');
+      document.body.classList.toggle('light-mode');
+      toggleThemeButton.textContent=
+        document.body.classList.contains('dark-mode')?'Light Mode':'Dark Mode';
     });
 
-    // ================================
-    // Clayton's Rule Calculator Logic
-    // ================================
+    /* ---- Elements ---- */
+    const currencyInput=document.getElementById('currencyType');
+    const startingBalanceInput=document.getElementById('startingBalance');
+    const setBalanceButton=document.getElementById('setBalance');
+    const transactionAmountInput=document.getElementById('transactionAmount');
+    const recordTransactionButton=document.getElementById('recordTransaction');
+    const transactionHistoryDiv=document.getElementById('transactionHistory');
+    const legitBalanceDiv=document.getElementById('legitBalance');
+    const fraudBalanceDiv=document.getElementById('fraudBalance');
+    const totalBalanceDiv=document.getElementById('totalBalance');
+    const clearAllButton=document.getElementById('clearAll');
+    const fraudCheck=document.getElementById('fraudCheck');
+    const transTypeRadios=document.getElementsByName('transType');
 
-    // Initialize state
-    let funds = [];  // Array to store deposits in FIFO order, each entry: {amount, type}
-    let startingSet = false;
+    /* ---- Currency validation (1 char only) ---- */
+    currencyInput.addEventListener('input',()=>{
+      if(currencyInput.value.length>1){ currencyInput.value=currencyInput.value.slice(0,1);}
+      currencyInput.value=currencyInput.value.replace(/\s/g,'');
+    });
 
-    // DOM Elements
-    const startingBalanceInput = document.getElementById('startingBalance');
-    const setBalanceButton = document.getElementById('setBalance');
-    const transactionAmountInput = document.getElementById('transactionAmount');
-    const recordTransactionButton = document.getElementById('recordTransaction');
-    const transactionHistoryDiv = document.getElementById('transactionHistory');
-    const legitBalanceDiv = document.getElementById('legitBalance');
-    const fraudBalanceDiv = document.getElementById('fraudBalance');
-    const totalBalanceDiv = document.getElementById('totalBalance');
-    const clearAllButton = document.getElementById('clearAll');
-    const fraudCheck = document.getElementById('fraudCheck');
-    const transTypeRadios = document.getElementsByName('transType');
-    const currencyInput = document.getElementById('currencyType');
+    /* ---- State ---- */
+    let funds=[];        // {amount, type:'legit'|'fraud'}
+    let startingSet=false;
 
-    // Returns the currently set currency symbol.
-    function getCurrency() {
-      return currencyInput.value.trim() || "";
-    }
-
-    function updateBalances() {
-      const legitBalance = funds.filter(f => f.type === 'legit').reduce((sum, f) => sum + f.amount, 0);
-      const fraudBalance = funds.filter(f => f.type === 'fraud').reduce((sum, f) => sum + f.amount, 0);
-      const totalBalance = legitBalance + fraudBalance;
-      const curr = getCurrency();
-      legitBalanceDiv.textContent = `Legitimate Balance: ${curr}${legitBalance.toFixed(2)}`;
-      fraudBalanceDiv.textContent = `Fraudulent Balance: ${curr}${fraudBalance.toFixed(2)}`;
-      totalBalanceDiv.textContent = `Total Balance: ${curr}${totalBalance.toFixed(2)}`;
-    }
-
-    function appendHistory(text) {
-      const p = document.createElement('p');
-      p.textContent = text;
+    const getCurrency=()=>currencyInput.value.trim()||'';
+    const updateBalances=()=>{
+      const legit=funds.filter(f=>f.type==='legit').reduce((s,f)=>s+f.amount,0);
+      const fraud=funds.filter(f=>f.type==='fraud').reduce((s,f)=>s+f.amount,0);
+      const total=legit+fraud, cur=getCurrency();
+      legitBalanceDiv.textContent=`Legitimate Balance: ${cur}${legit.toFixed(2)}`;
+      fraudBalanceDiv.textContent=`Fraudulent Balance: ${cur}${fraud.toFixed(2)}`;
+      totalBalanceDiv.textContent=`Total Balance: ${cur}${total.toFixed(2)}`;
+    };
+    const appendHistory=txt=>{
+      const p=document.createElement('p');p.textContent=txt;
       transactionHistoryDiv.appendChild(p);
-      transactionHistoryDiv.scrollTop = transactionHistoryDiv.scrollHeight;
-    }
+      transactionHistoryDiv.scrollTop=transactionHistoryDiv.scrollHeight;
+    };
 
-    // Set starting balance as a legitimate deposit
-    setBalanceButton.addEventListener('click', () => {
-      const value = parseFloat(startingBalanceInput.value);
-      if (isNaN(value) || value <= 0) {
-        alert('Please enter a valid, positive starting balance.');
-        return;
-      }
-      funds.push({amount: value, type: 'legit'});
-      startingSet = true;
+    /* ---- Set starting balance ---- */
+    setBalanceButton.addEventListener('click',()=>{
+      const v=parseFloat(startingBalanceInput.value);
+      if(isNaN(v)||v<=0){alert('Enter positive starting balance');return;}
+      funds.push({amount:v,type:'legit'});startingSet=true;
       updateBalances();
-      appendHistory(`Starting Balance: ${getCurrency()}${value.toFixed(2)} (Legitimate)`);
-      startingBalanceInput.disabled = true;
-      setBalanceButton.disabled = true;
-      currencyInput.disabled = true; // lock in currency choice
+      appendHistory(`Starting Balance: ${getCurrency()}${v.toFixed(2)} (Legitimate)`);
+      startingBalanceInput.disabled=true; setBalanceButton.disabled=true; currencyInput.disabled=true;
     });
 
-    // Enable/disable fraud checkbox depending on transaction type
-    function updateFraudCheckbox() {
-      const selected = document.querySelector('input[name="transType"]:checked').value;
-      if (selected === 'withdrawal') {
-        fraudCheck.checked = false;
-        fraudCheck.disabled = true;
-      } else {
-        fraudCheck.disabled = false;
-      }
-    }
-    transTypeRadios.forEach(radio => {
-      radio.addEventListener('change', updateFraudCheckbox);
-    });
+    /* ---- Enable/disable fraud checkbox ---- */
+    const updateFraud=()=> {
+      const type=document.querySelector('input[name="transType"]:checked').value;
+      fraudCheck.disabled=(type==='withdrawal');
+      if(fraudCheck.disabled) fraudCheck.checked=false;
+    };
+    transTypeRadios.forEach(r=>r.addEventListener('change',updateFraud));
+    updateFraud();
 
-    // Record transaction
-    recordTransactionButton.addEventListener('click', () => {
-      if (!startingSet) {
-        alert('Please set the starting balance first.');
-        return;
-      }
-      const amount = parseFloat(transactionAmountInput.value);
-      if (isNaN(amount) || amount <= 0) {
-        alert('Please enter a valid, positive transaction amount.');
-        return;
-      }
-      const transType = document.querySelector('input[name="transType"]:checked').value;
-      const curr = getCurrency();
-      if (transType === 'deposit') {
-        const depositType = fraudCheck.checked ? 'fraud' : 'legit';
-        funds.push({amount: amount, type: depositType});
-        appendHistory(`Deposit: ${curr}${amount.toFixed(2)} (${depositType === 'fraud' ? 'Fraudulent' : 'Legitimate'})`);
-      } else {
-        // Withdrawal: process funds in FIFO order.
-        const totalAvailable = funds.reduce((sum, f) => sum + f.amount, 0);
-        if (amount > totalAvailable) {
-          alert('Not enough funds to withdraw the specified amount.');
-          return;
-        }
-        let withdrawalRemaining = amount;
-        let fraudUsed = 0.0;
-        let legitUsed = 0.0;
-        while (withdrawalRemaining > 0 && funds.length > 0) {
-          const current = funds[0];
-          if (current.amount <= withdrawalRemaining) {
-            if (current.type === 'fraud') {
-              fraudUsed += current.amount;
-            } else {
-              legitUsed += current.amount;
-            }
-            withdrawalRemaining -= current.amount;
-            funds.shift();
-          } else {
-            if (current.type === 'fraud') {
-              fraudUsed += withdrawalRemaining;
-            } else {
-              legitUsed += withdrawalRemaining;
-            }
-            current.amount -= withdrawalRemaining;
-            withdrawalRemaining = 0;
+    /* ---- Record transaction ---- */
+    recordTransactionButton.addEventListener('click',()=>{
+      if(!startingSet){alert('Set starting balance first');return;}
+      const amt=parseFloat(transactionAmountInput.value);
+      if(isNaN(amt)||amt<=0){alert('Enter positive amount');return;}
+      const type=document.querySelector('input[name="transType"]:checked').value;
+      const cur=getCurrency();
+      if(type==='deposit'){
+        const depType=fraudCheck.checked?'fraud':'legit';
+        funds.push({amount:amt,type:depType});
+        appendHistory(`Deposit: ${cur}${amt.toFixed(2)} (${depType==='fraud'?'Fraudulent':'Legitimate'})`);
+      }else{
+        const available=funds.reduce((s,f)=>s+f.amount,0);
+        if(amt>available){alert('Not enough funds');return;}
+        let remaining=amt,fraudUsed=0,legitUsed=0;
+        while(remaining>0&&funds.length){
+          const f=funds[0];
+          if(f.amount<=remaining){
+            f.type==='fraud'?fraudUsed+=f.amount:legitUsed+=f.amount;
+            remaining-=f.amount;funds.shift();
+          }else{
+            f.type==='fraud'?fraudUsed+=remaining:legitUsed+=remaining;
+            f.amount-=remaining;remaining=0;
           }
         }
-        appendHistory(`Withdrawal: ${curr}${amount.toFixed(2)} (Legitimate used: ${curr}${legitUsed.toFixed(2)}, Fraudulent used: ${curr}${fraudUsed.toFixed(2)})`);
+        appendHistory(`Withdrawal: ${cur}${amt.toFixed(2)} (Legitimate used: ${cur}${legitUsed.toFixed(2)}, Fraudulent used: ${cur}${fraudUsed.toFixed(2)})`);
       }
-      transactionAmountInput.value = '';
-      fraudCheck.checked = false;
-      updateFraudCheckbox();
+      transactionAmountInput.value='';fraudCheck.checked=false;transTypeRadios[0].checked=true;updateFraud();
       updateBalances();
     });
 
-    // Clear all: Reload the page (which resets the app)
-    clearAllButton.addEventListener('click', () => {
-      if (confirm('Are you sure you want to clear all data and refresh the page?')) {
-        window.location.reload();
-      }
+    /* ---- Clear all ---- */
+    clearAllButton.addEventListener('click',()=>{
+      if(confirm('Clear all data and refresh?')) window.location.reload();
     });
-
-    // Initialize fraud checkbox state
-    updateFraudCheckbox();
   </script>
 </body>
 </html>
